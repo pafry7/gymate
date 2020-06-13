@@ -1,8 +1,11 @@
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { ThemeProvider, CssBaseline } from "@material-ui/core";
+import { ThemeProvider, CssBaseline, Container } from "@material-ui/core";
 import React from "react";
 import { theme } from "theme";
+import { Header } from "components/Header";
+import { AuthProvider } from "context/AuthContext";
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -22,9 +25,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
+        <AuthProvider>
+          <CssBaseline />
+          <Header />
+          <Container maxWidth="lg">
+            <Component {...pageProps} />
+          </Container>
+        </AuthProvider>
       </ThemeProvider>
     </React.Fragment>
   );
