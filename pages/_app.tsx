@@ -1,3 +1,5 @@
+import "mapbox-gl/dist/mapbox-gl.css";
+
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { ThemeProvider, CssBaseline, Container } from "@material-ui/core";

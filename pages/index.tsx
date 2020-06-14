@@ -1,16 +1,8 @@
 import { NextPage } from "next";
-import { Search } from "@material-ui/icons";
 import { Fragment } from "react";
-import {
-  Box,
-  Button,
-  Grid,
-  TextField,
-  IconButton,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Box, Button, Grid, Paper, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { ActivitiesSearch } from "components/ActivitiesSearch";
 
 const Home: NextPage = () => {
   const classes = useStyles();
@@ -44,32 +36,8 @@ const Home: NextPage = () => {
           />
         </Grid>
       </Grid>
-      <Paper
-        elevation={1}
-        className={`${classes.textFieldBox} ${classes.box}`}
-        component="section"
-      >
-        <Box>
-          <h1>Find activities in your area</h1>
-          <form noValidate autoComplete="off">
-            <Box className={classes.textFieldBox}>
-              <TextField
-                className={classes.textField}
-                id="standard-basic"
-                label="Discipline"
-              />
-              <TextField
-                className={classes.textField}
-                id="standard-basic"
-                label="Address"
-              />
-              <IconButton aria-label="delete" edge="start" size="medium">
-                <Search />
-              </IconButton>
-            </Box>
-          </form>
-        </Box>
-      </Paper>
+
+      <ActivitiesSearch />
 
       <Box component="section" className={`${classes.section} ${classes.box}`}>
         <Box>

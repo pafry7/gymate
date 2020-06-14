@@ -1,11 +1,5 @@
 import React, { useContext, createContext, Dispatch, useReducer } from "react";
-import {
-  FETCH_STATE,
-  AUTHENTICATED_STATE,
-  AuthState,
-  authReducer,
-  AuthActions,
-} from "reducers/authReducer";
+import { AuthState, authReducer, AuthActions } from "reducers/authReducer";
 
 const initialState: AuthState = {
   authenticated: "UNAUTHENTICATED",
