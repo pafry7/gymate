@@ -77,7 +77,7 @@ const ActivitiesSearch = () => {
             />
             <Link
               href={{
-                pathname: "/offerts",
+                pathname: "/offers",
                 query: { city: "Kraków", discipline: discipline },
               }}
             >

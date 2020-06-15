@@ -104,7 +104,7 @@ const OffersList: React.FC<OffersListProps> = ({ offers }) => {
     <Paper>
       <List className={classes.root}>
         {offers.map((offer) => (
-          <Link href="#">
+          <Link href={`/offers/${offer.id}`}>
             <ListItem alignItems="flex-start" button>
               <ListItemAvatar>
                 <ListAvatar className={classes.avatar} type={offer.name} />

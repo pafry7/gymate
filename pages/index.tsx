@@ -17,18 +17,15 @@ const Home: NextPage = () => {
         justify="center"
         alignItems="center"
       >
-        <Grid item xs={6} className={classes.item}>
+        <Grid item xs={4} className={classes.item}>
           <h1>Make your life better</h1>
           <p>
             Find sporting activities in your area and take care of your health.
             Choose your favorite discipline and join the classes or book a
             personal trainer.
           </p>
-          <Button variant="contained" color="primary">
-            Primary
-          </Button>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={8} className={classes.image}>
           <img
             style={{ maxHeight: 350 }}
             src="/landing.svg"
@@ -119,8 +116,12 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingBottom: theme.spacing(8),
       paddingTop: theme.spacing(8),
     },
+    image: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "start",
+    },
     item: {
-      paddingTop: theme.spacing(8),
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",

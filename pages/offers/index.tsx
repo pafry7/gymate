@@ -6,7 +6,7 @@ import { Grid } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { OffersList } from "components/OffersList";
 
-interface OffertsProps {
+interface OffersProps {
   response: Offer[];
 }
 const useStyles = makeStyles((theme: Theme) =>
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-const Offerts: NextPage<OffertsProps> = ({ response }) => {
+const Offers: NextPage<OffersProps> = ({ response }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const classes = useStyles();
 
@@ -56,4 +56,4 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     },
   };
 };
-export default Offerts;
+export default Offers;
