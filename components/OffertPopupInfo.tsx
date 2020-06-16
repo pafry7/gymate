@@ -1,5 +1,5 @@
 import React from "react";
-import { Offer } from "mocks/offerts";
+import { Offer } from "mocks/offers";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Card,
@@ -26,7 +26,7 @@ const useStyles = makeStyles({
   },
 });
 
-const OffertPopupInfo: React.FC<OfferPopupInfoProps> = ({ offer }) => {
+const OfferPopupInfo: React.FC<OfferPopupInfoProps> = ({ offer }) => {
   const classes = useStyles();
 
   return (
