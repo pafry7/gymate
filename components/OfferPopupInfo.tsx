@@ -10,6 +10,7 @@ import {
   CardActions,
   Button,
 } from "@material-ui/core";
+import Link from "next/link";
 
 interface OfferPopupInfoProps {
   offer: Offer;
@@ -47,9 +48,11 @@ const OfferPopupInfo: React.FC<OfferPopupInfoProps> = ({ offer }) => {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary">
-          Learn More
-        </Button>
+        <Link href={`/offers/${offer.id}`}>
+          <Button size="small" color="primary">
+            Learn More
+          </Button>
+        </Link>
       </CardActions>
     </Card>
   );
