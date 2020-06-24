@@ -46,7 +46,6 @@ const RegisterDialog = ({ open, handleClose }: RegisterDialogProps) => {
         email: data.email,
       })
       .json();
-    console.log(response);
     dispatch({
       type: Types.LOGIN,
       payload: {

@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import MapGL, { NavigationControl, ScaleControl, Popup } from "react-map-gl";
-import { Offer } from "mocks/offers";
 import { Pins } from "components/Pins";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
+import { Offer } from "pages/offers";
 import { OfferPopupInfo } from "components/OfferPopupInfo";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoicGFmcnkiLCJhIjoiY2tiZjN5YXprMHMydjJ4bTJ6Nmc0Nm05cCJ9.tjK7bVJ2b60K7UAnLSc3dg";
-// "pk.eyJ1IjoicGFmcnkiLCJhIjoiY2s0Zmw0ODNmMG5udTNubzJvanVmOGRmcyJ9.z3FCzCdtObuhGbx3vghYOg";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,7 +43,7 @@ const Map: React.FC<MapProps> = ({ mapRef, offers }) => {
   const [viewport, setViewport] = useState({
     latitude: 50.061726,
     longitude: 19.947243,
-    zoom: 10,
+    zoom: 11,
     minZoom: 6,
   });
   const [popupInfo, setPopupInfo] = useState<Offer | null>(null);
@@ -64,8 +63,8 @@ const Map: React.FC<MapProps> = ({ mapRef, offers }) => {
         <Popup
           tipSize={5}
           anchor="top"
-          longitude={popupInfo.address.coords.longitude}
-          latitude={popupInfo.address.coords.latitude}
+          longitude={popupInfo.longitude}
+          latitude={popupInfo.latitude}
           closeOnClick={false}
           onClose={() => setPopupInfo(null)}
         >

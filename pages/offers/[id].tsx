@@ -1,6 +1,6 @@
 import React from "react";
+import wretch from "wretch";
 import { grey } from "@material-ui/core/colors";
-import { useRouter } from "next/router";
 import {
   Paper,
   makeStyles,
@@ -10,9 +10,12 @@ import {
   Box,
   Typography,
   Divider,
+  CardMedia,
   Button,
+  Card,
+  CardActionArea,
 } from "@material-ui/core";
-import { offers, Offer as OfferType } from "mocks/offers";
+import { Offer as OfferType } from "pages/offers";
 import { FullWidthTabs } from "components/Tabs";
 import { GetServerSideProps } from "next";
 import { terms } from "mocks/terms";
@@ -41,18 +44,21 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100px",
       borderRadius: "30px",
     },
+    media: {
+      height: 400,
+    },
   })
 );
 
 interface OfferProps {
   offer: OfferType;
+  sport: string;
+  address: string;
 }
 
-const Offer: React.FC<OfferProps> = ({ offer }) => {
-  // const router = useRouter();
+const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
   const classes = useStyles();
   const { state, dispatch } = useAuth();
-  // const { id } = router.query;
 
   const adjustSpaceLeftText = (spacesLeft: number): string => {
     if (spacesLeft === 0) {
@@ -72,31 +78,41 @@ const Offer: React.FC<OfferProps> = ({ offer }) => {
       // register / login
     }
   };
+  console.log(sport);
 
   return (
     <Paper className={classes.paper}>
       <Grid component="section" container direction="row">
         <Grid item xs={6} className={`${classes.paddings} ${classes.info}`}>
-          <img
-            style={{ maxHeight: 350, borderRadius: 15 }}
-            src="/gym.jpg"
-            alt="Data coming from all directions to a computer"
+          <CardMedia
+            className={classes.media}
+            image={`/${sport.toLowerCase()}.jpg`}
+            title="Contemplative Reptile"
           />
+          {/* <img
+            style={{ maxHeight: 350, borderRadius: 15 }}
+            src="gym.jpg"
+            alt="Data coming from all directions to a computer"
+          /> */}
           <Box my={2}>
             <Typography variant="caption" color="textSecondary">
-              {`sport type`.toUpperCase()}
+              {sport.toUpperCase()}
             </Typography>
             <Typography variant="h5">{offer.name}</Typography>
           </Box>
           <FullWidthTabs labels={["Info", "Location", "Reviews"]}>
-            <div>info</div>
-            <div>location</div>
-            <div>reviews</div>
+            <div>{offer.description}</div>
+            <div>{address}</div>
+            <div>There are no reviews yet</div>
           </FullWidthTabs>
           <FullWidthTabs labels={["Pricing", "Discounts", "Special offers"]}>
-            <div>pricing</div>
-            <div>discounts</div>
-            <div>sepcial offers</div>
+            <div>{`Entry costs ${offer.singlePrice} zł`}</div>
+            <div>
+              {offer.isFirstFree
+                ? `First entery is for free!`
+                : `There are no discounts`}
+            </div>
+            <div>Currently there are no special offers</div>
           </FullWidthTabs>
         </Grid>
         <Grid item xs={6} className={`${classes.paddings} ${classes.info}`}>
@@ -160,16 +176,31 @@ const Offer: React.FC<OfferProps> = ({ offer }) => {
     </Paper>
   );
 };
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  let response = await new Promise((res, rej) => {
-    setTimeout(() => {
-      res(offers[0]);
-    }, 1000);
-  });
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log(context);
+  const { id }: any = context.query;
+  const response: OfferType = await wretch()
+    .url(`https://gymate-restapi.herokuapp.com/offers/${id}`)
+    .get()
+    .json();
+  const sport = await wretch()
+    .url(`https://gymate-restapi.herokuapp.com/sports/${response.sportId}`)
+    .get()
+    .json();
+  const MAPBOX_TOKEN =
+    "pk.eyJ1IjoicGFmcnkiLCJhIjoiY2tiZjN5YXprMHMydjJ4bTJ6Nmc0Nm05cCJ9.tjK7bVJ2b60K7UAnLSc3dg";
 
+  const address = await wretch()
+    .url(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${response.longitude},${response.latitude}.json?access_token=${MAPBOX_TOKEN}`
+    )
+    .get()
+    .json();
   return {
     props: {
       offer: response,
+      sport: sport.name,
+      address: address.features[0].place_name,
     },
   };
 };

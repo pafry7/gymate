@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
 
 const TimeTableCell = ({ props, openDrawer, today, setClickedDate }) => {
   const handleClick = () => {
-    console.log(props);
     setClickedDate(props.startDate);
     openDrawer();
   };

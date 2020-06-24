@@ -13,11 +13,11 @@ export interface Offer {
   singlePrice: number;
   isFirstFree: boolean;
   dates: Date[];
-  provideId: number;
+  providerId: number;
   latitude: number;
   longitude: number;
   sportId: number;
-  sports: number;
+  spots: number;
 }
 interface OffersProps {
   offers: Offer[];
@@ -49,7 +49,7 @@ const Offers: NextPage<OffersProps> = ({ offers }) => {
           <OffersList offers={offers} />
         </Grid>
         <Grid item xs={7}>
-          {/* <Map offers={offers} mapRef={mapRef} /> */}
+          <Map offers={offers} mapRef={mapRef} />
         </Grid>
       </Grid>
     </Fragment>
@@ -58,12 +58,18 @@ const Offers: NextPage<OffersProps> = ({ offers }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const { discipline }: any = query;
-  console.log(discipline);
-  const response = await wretch()
-    .url(`https://gymate-restapi.herokuapp.com/offers/sports/${discipline}`)
-    .get()
-    .json();
-  console.log(response);
+  let response;
+  if (discipline === "All") {
+    response = await wretch()
+      .url(`https://gymate-restapi.herokuapp.com/offers`)
+      .get()
+      .json();
+  } else {
+    response = await wretch()
+      .url(`https://gymate-restapi.herokuapp.com/offers/sports/${discipline}`)
+      .get()
+      .json();
+  }
   return {
     props: {
       offers: response,

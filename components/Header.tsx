@@ -33,7 +33,6 @@ export function Header() {
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { state, dispatch } = useAuth();
-  console.log("header", state.authenticated);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

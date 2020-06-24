@@ -28,7 +28,6 @@ const LoginSchema = yup.object().shape({
 
 const LoginDialog = ({ open, handleClose }: LoginDialogProps) => {
   const { state, dispatch } = useAuth();
-  // console.log(state);
   const { register, handleSubmit, errors, reset } = useForm<Inputs>({
     validationSchema: LoginSchema,
   });
@@ -38,7 +37,6 @@ const LoginDialog = ({ open, handleClose }: LoginDialogProps) => {
       .url("https://gymate-restapi.herokuapp.com/login")
       .post({ password: data.password, username: data.name })
       .json();
-    console.log(response);
     dispatch({
       type: Types.LOGIN,
       payload: {

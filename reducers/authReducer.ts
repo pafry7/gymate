@@ -59,8 +59,6 @@ type AuthPayload = {
   [Types.LOGOUT]: {};
 };
 
-const BASE_URL = "http://localhost:9000";
-
 export type AuthActions = ActionMap<AuthPayload>[keyof ActionMap<AuthPayload>];
 
 export const authReducer = (state: AuthState, action: AuthActions) => {
@@ -78,7 +76,6 @@ export const authReducer = (state: AuthState, action: AuthActions) => {
         authenticated: "AUTHENTICATED",
       };
     case Types.LOGOUT:
-      // localStorage.removeItem("user");
       return { ...state, user: null, authenticated: "UNAUTHENTICATED" };
     default:
       return state;

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Marker } from "react-map-gl";
-import { Offer } from "mocks/offers";
+import { Offer } from "pages/offers";
 import { theme } from "theme";
 
-const SIZE = 24;
+const SIZE = 32;
 
 type PinsProps = {
   offers: Offer[];
@@ -20,8 +20,8 @@ const Pins: React.FC<PinsProps> = ({ offers, onClick }) => {
       {offers.map((offer, index) => (
         <Marker
           key={`marker-${index}`}
-          longitude={offer.address.coords.longitude}
-          latitude={offer.address.coords.latitude}
+          longitude={offer.longitude}
+          latitude={offer.latitude}
         >
           <svg
             height={SIZE}

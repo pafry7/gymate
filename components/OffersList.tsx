@@ -29,6 +29,7 @@ import FilterHdrIcon from "@material-ui/icons/FilterHdr";
 import PoolIcon from "@material-ui/icons/Pool";
 import Link from "next/link";
 import { Offer } from "pages/offers";
+
 interface OffersListProps {
   offers: Offer[];
 }
@@ -51,40 +52,41 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-const ListAvatar = ({ type, className }: { type: string; className: any }) => {
+const ListAvatar = ({ type, className }: { type: number; className: any }) => {
   let background = null;
   let icon: any = null;
-  switch (type.toLowerCase()) {
-    case "gym":
+  switch (type) {
+    case 6:
       background = orange[400];
       icon = FitnessCenterIcon;
       break;
-    case "ping pong":
+    case 8:
       background = green[400];
       icon = FiberManualRecordIcon;
       break;
-    case "boxing":
+    case 4:
       icon = SportsMmaIcon;
       background = red[400];
       break;
-    case "mma":
+    case 2:
       icon = SportsKabaddiIcon;
       background = grey[400];
       break;
-    case "swimming":
+    case 3:
       background = blue[400];
       icon = PoolIcon;
       break;
-    case "tennis":
+    case 7:
       background = pink[400];
       icon = SportsTennisIcon;
       break;
-    case "climbing":
+    case 5:
       background = brown[400];
       icon = FilterHdrIcon;
       break;
     default:
       background = orange[400];
+      icon = PoolIcon;
   }
   const Icon = icon;
   return (
@@ -106,7 +108,7 @@ const OffersList: React.FC<OffersListProps> = ({ offers }) => {
           <Link key={offer.id} href={`/offers/${offer.id}`}>
             <ListItem alignItems="flex-start" button>
               <ListItemAvatar>
-                <ListAvatar className={classes.avatar} type={"MMA"} />
+                <ListAvatar className={classes.avatar} type={offer.sportId} />
               </ListItemAvatar>
               <ListItemText
                 primary={offer.name}

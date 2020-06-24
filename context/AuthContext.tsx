@@ -25,19 +25,14 @@ const AuthContext = createContext<{
 
 const AuthProvider = (props: any) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  console.log("provider", state);
 
   useEffect(() => {
     const token = localStorage.getItem("user");
     if (token) {
-      console.log("token");
       const user: User = jwtDecode(token);
-      console.log(token);
       dispatch({ type: Types.LOGIN, payload: user });
     }
   }, []);
-
-  console.log(state);
 
   return (
     <AuthContext.Provider
