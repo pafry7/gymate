@@ -3,13 +3,13 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { ThemeProvider, CssBaseline, Container } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { theme } from "theme";
 import { Header } from "components/Header";
 import { AuthProvider } from "context/AuthContext";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  React.useEffect(() => {
+  useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {

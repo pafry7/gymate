@@ -4,10 +4,13 @@ import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
+import { useAuth } from "context/AuthContext";
 import DialogTitle from "@material-ui/core/DialogTitle";
+
+import { Types, UserResponse } from "reducers/authReducer";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-
+import wretch from "wretch";
 interface RegisterDialogProps {
   open: boolean;
   handleClose: () => void;
@@ -28,12 +31,34 @@ const RegisterSchema = yup.object().shape({
 });
 
 const RegisterDialog = ({ open, handleClose }: RegisterDialogProps) => {
-  const { register, handleSubmit, errors } = useForm<Inputs>({
+  const { state, dispatch } = useAuth();
+  const { register, handleSubmit, errors, reset } = useForm<Inputs>({
     validationSchema: RegisterSchema,
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const response: UserResponse = await wretch()
+      .url("https://gymate-restapi.herokuapp.com/users")
+      .post({
+        password: data.password,
+        username: data.name,
+        accountType: 2,
+        email: data.email,
+      })
+      .json();
+    console.log(response);
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        email: response.email,
+        id: response.id,
+        username: response.username,
+        accountType: response.accountType,
+      },
+    });
+    localStorage.setItem("user", response.jwt);
+    reset();
+    handleClose();
   };
   return (
     <Dialog

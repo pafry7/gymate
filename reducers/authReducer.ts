@@ -1,3 +1,5 @@
+import wretch from "wretch";
+
 type ActionMap<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
@@ -13,6 +15,7 @@ export enum Types {
   LOGIN = "LOGIN",
   LOGOUT = "LOGOUT",
   SIGNUP = "SIGNUP",
+  AUTH = "AUTH",
 }
 
 export type AUTHENTICATED = "AUTHENTICATED";
@@ -31,42 +34,52 @@ export type AuthState = {
   user: User | null; // for a while
 };
 
-type User = {
+export type UserResponse = {
   id: string;
   username: string;
+  accountType: number;
+  email: string;
+  jwt: string;
+};
+
+export type User = {
+  id: string;
+  username: string;
+  accountType: number;
   email: string;
 };
 
 type AuthPayload = {
   [Types.LOGIN]: {
     username: string;
-    password: string;
-  };
-  [Types.SIGNUP]: {
+    id: string;
     email: string;
-    username: string;
-    password: string;
+    accountType: number;
   };
   [Types.LOGOUT]: {};
 };
+
+const BASE_URL = "http://localhost:9000";
 
 export type AuthActions = ActionMap<AuthPayload>[keyof ActionMap<AuthPayload>];
 
 export const authReducer = (state: AuthState, action: AuthActions) => {
   switch (action.type) {
     case Types.LOGIN:
-      const { username, password } = action.payload;
-      if (username === "admin" && password === "admin") {
-        return {
-          ...state,
-          user: { id: "1", email: "test@test.pl", username: "admin" },
-          authenticated: "AUTHENTICATED",
-        };
-      }
+      const user: User = action.payload;
+      return {
+        ...state,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          accountType: user.accountType,
+        },
+        authenticated: "AUTHENTICATED",
+      };
     case Types.LOGOUT:
+      // localStorage.removeItem("user");
       return { ...state, user: null, authenticated: "UNAUTHENTICATED" };
-    case Types.SIGNUP:
-      return { ...state, user: { id: "2" }, authenticated: "AUTHENTICATED" };
     default:
       return state;
   }

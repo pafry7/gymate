@@ -1,5 +1,4 @@
 import React from "react";
-import { Offer } from "mocks/offers";
 import {
   makeStyles,
   Theme,
@@ -29,7 +28,7 @@ import SportsKabaddiIcon from "@material-ui/icons/SportsKabaddi";
 import FilterHdrIcon from "@material-ui/icons/FilterHdr";
 import PoolIcon from "@material-ui/icons/Pool";
 import Link from "next/link";
-
+import { Offer } from "pages/offers";
 interface OffersListProps {
   offers: Offer[];
 }
@@ -104,10 +103,10 @@ const OffersList: React.FC<OffersListProps> = ({ offers }) => {
     <Paper>
       <List className={classes.root}>
         {offers.map((offer) => (
-          <Link href={`/offers/${offer.id}`}>
+          <Link key={offer.id} href={`/offers/${offer.id}`}>
             <ListItem alignItems="flex-start" button>
               <ListItemAvatar>
-                <ListAvatar className={classes.avatar} type={offer.name} />
+                <ListAvatar className={classes.avatar} type={"MMA"} />
               </ListItemAvatar>
               <ListItemText
                 primary={offer.name}
@@ -121,7 +120,7 @@ const OffersList: React.FC<OffersListProps> = ({ offers }) => {
                     >
                       {offer.description}
                     </Typography>
-                    {` | ${offer.singlePrice} zł | ${offer.address.city}`}
+                    {` | ${offer.singlePrice} zł`}
                   </React.Fragment>
                 }
               />

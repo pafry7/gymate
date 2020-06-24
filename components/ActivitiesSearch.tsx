@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
+      minWidth: 220,
     },
   })
 );
@@ -60,9 +60,11 @@ const ActivitiesSearch = () => {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
+                fullWidth
                 value={discipline}
                 onChange={handleChange}
               >
+                <MenuItem value="All">All</MenuItem>
                 {disciplines.map((discipline, index) => (
                   <MenuItem key={index} value={discipline}>
                     {discipline}
@@ -70,15 +72,10 @@ const ActivitiesSearch = () => {
                 ))}
               </Select>
             </FormControl>
-            <TextField
-              className={classes.textField}
-              id="standard-basic"
-              label="Address"
-            />
             <Link
               href={{
                 pathname: "/offers",
-                query: { city: "Kraków", discipline: discipline },
+                query: { discipline: discipline },
               }}
             >
               <IconButton aria-label="delete" edge="start" size="medium">

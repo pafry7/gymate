@@ -13,6 +13,7 @@
     "@devexpress/dx-react-scheduler-material-ui": "^2.6.4",
     "@material-ui/core": "^4.10.1",
     "@material-ui/icons": "^4.9.1",
+    "jwt-decode": "^2.2.0",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -22,6 +23,7 @@
     "yup": "^0.29.1"
   },
   "devDependencies": {
+    "@types/jwt-decode": "^2.2.1",
     "@types/node": "^14.0.11",
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",

@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { Fragment } from "react";
-import { Box, Button, Grid, Paper, Typography } from "@material-ui/core";
+import { Box, Grid, Paper, Typography } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { ActivitiesSearch } from "components/ActivitiesSearch";
 

@@ -22,9 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TimeTableCell = (props) => {
-  const handleClick = () => {
-    console.log(props);
-  };
+  const handleClick = () => {};
   return (
     <DayView.DayScaleCell
       {...props}

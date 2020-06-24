@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
+import wretch from "wretch";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useAuth } from "context/AuthContext";
-import { Types } from "reducers/authReducer";
+import { Types, UserResponse } from "reducers/authReducer";
 
 interface LoginDialogProps {
   open: boolean;
@@ -27,16 +28,27 @@ const LoginSchema = yup.object().shape({
 
 const LoginDialog = ({ open, handleClose }: LoginDialogProps) => {
   const { state, dispatch } = useAuth();
-  console.log(state);
+  // console.log(state);
   const { register, handleSubmit, errors, reset } = useForm<Inputs>({
     validationSchema: LoginSchema,
   });
 
-  const onSubmit = (data: Inputs) => {
+  const onSubmit = async (data: Inputs) => {
+    const response: UserResponse = await wretch()
+      .url("https://gymate-restapi.herokuapp.com/login")
+      .post({ password: data.password, username: data.name })
+      .json();
+    console.log(response);
     dispatch({
       type: Types.LOGIN,
-      payload: { password: data.password, username: data.name },
+      payload: {
+        email: response.email,
+        id: response.id,
+        username: response.username,
+        accountType: response.accountType,
+      },
     });
+    localStorage.setItem("user", response.jwt);
     reset();
     handleClose();
   };
