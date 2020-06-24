@@ -81,12 +81,18 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
     }
   };
 
-  const handleClick = async () => {
+  const handleClick = async (date: any) => {
     if (state.authenticated === "AUTHENTICATED") {
-      //  await wretch()
-      //   .url(`https://gymate-restapi.herokuapp.com/offers/${id}`)
-      //   .get()
-      //   .json();
+      await wretch()
+        .url(
+          `https://gymate-restapi.herokuapp.com/offers/${offer.id}/reservations`
+        )
+        .post({
+          offerId: offer.id,
+          userId: state.user.id,
+          eventDate: date,
+        })
+        .json();
       //open modal
     } else {
       handleClickOpen();
@@ -96,7 +102,7 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
   const formattedDates = offer.dates.map((date) => {
     const fDate = new Date(date).toDateString();
     const time = new Date(date).toLocaleTimeString();
-    return { fDate, time };
+    return { fDate, time, oDate: date };
   });
 
   return (
@@ -167,7 +173,7 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
                       color="primary"
                       className={classes.button}
                       disabled={!offer.spots}
-                      onClick={handleClick}
+                      onClick={() => handleClick(date.oDate)}
                     >
                       Join
                     </Button>

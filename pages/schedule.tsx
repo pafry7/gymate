@@ -1,7 +1,9 @@
 import { NextPage, GetServerSideProps } from "next";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import { AppointmentsList } from "components/AppointmentsList";
+import wretch from "wretch";
+import { useAuth } from "context/AuthContext";
 import { ViewState } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
@@ -37,10 +39,48 @@ const TimeTableCell = ({ props, openDrawer, today, setClickedDate }) => {
 
 const Schedule: NextPage<ScheduleProps> = () => {
   const classes = useStyles();
+  const { state, dispatch } = useAuth();
   const [date, setDate] = useState(new Date());
   const [clickedDate, setClickedDate] = useState(null);
   const [open, setOpen] = useState(false);
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [offer, setOffer] = useState(null);
 
+  useEffect(() => {
+    setLoading(true);
+    async function fetchSport() {
+      try {
+        const response = await wretch()
+          .url(
+            `https://gymate-restapi.herokuapp.com/users/${state.user.id}/reservations`
+          )
+          .get()
+          .json();
+
+        const schedulerData = reservations?.map((res) => {
+          const endDate = new Date(res.eventDate);
+          endDate.setHours(endDate.getHours() + 1);
+          return { startDate: res.eventDate, endDate, title: offer.name };
+        });
+        setReservations(schedulerData);
+
+        const offer = await wretch()
+          .url(
+            `https://gymate-restapi.herokuapp.com/offers/${response[0].offerId}`
+          )
+          .get()
+          .json();
+        setOffer(offer);
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchSport();
+  }, []);
+
+  console.log(reservations);
   const openDrawer = () => {
     setOpen(true);
   };
@@ -52,6 +92,11 @@ const Schedule: NextPage<ScheduleProps> = () => {
   const year = date.getFullYear();
   const month = date.toLocaleDateString(undefined, { month: "long" });
 
+  // const schedulerData = reservations?.map((res) => {
+  //   const endDate = new Date(res.eventDate);
+  //   endDate.setHours(endDate.getHours() + 1);
+  //   return { startDate: res.eventDate, endDate, title: offer.name };
+  // });
   const schedulerData = [
     {
       startDate: "2020-06-20T09:45",
@@ -72,20 +117,26 @@ const Schedule: NextPage<ScheduleProps> = () => {
           <Typography variant="h2">{year}</Typography>
           <Typography variant="h1">{month}</Typography>
         </Box>
-        <Scheduler data={schedulerData}>
-          <ViewState />
-          <MonthView
-            timeTableCellComponent={(props) =>
-              TimeTableCell({
-                props,
-                openDrawer,
-                today: classes.today,
-                setClickedDate,
-              })
-            }
-          />
-          <Appointments />
-        </Scheduler>
+        {/* {loading ? (
+          <div>test</div>
+        ) : ( */}
+        <>
+          <Scheduler data={schedulerData}>
+            <ViewState />
+            <MonthView
+              timeTableCellComponent={(props) =>
+                TimeTableCell({
+                  props,
+                  openDrawer,
+                  today: classes.today,
+                  setClickedDate,
+                })
+              }
+            />
+            <Appointments />
+          </Scheduler>
+        </>
+        {/* )} */}
       </Paper>
       <Drawer anchor="right" open={open} onClose={() => toggleDrawer()}>
         <AppointmentsList date={clickedDate} appointments={schedulerData} />
@@ -94,17 +145,4 @@ const Schedule: NextPage<ScheduleProps> = () => {
   );
 };
 
-// export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-//   let response = await new Promise((res, rej) => {
-//     setTimeout(() => {
-//       res(offers);
-//     }, 1000);
-//   });
-
-//   return {
-//     props: {
-//       response,
-//     },
-//   };
-// };
 export default Schedule;
