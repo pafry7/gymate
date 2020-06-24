@@ -8,17 +8,19 @@ import {
   Theme,
   Grid,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  DialogContentText,
   Typography,
   Divider,
   CardMedia,
   Button,
-  Card,
-  CardActionArea,
 } from "@material-ui/core";
 import { Offer as OfferType } from "pages/offers";
 import { FullWidthTabs } from "components/Tabs";
 import { GetServerSideProps } from "next";
-import { terms } from "mocks/terms";
 import { useAuth } from "context/AuthContext";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,7 +60,16 @@ interface OfferProps {
 
 const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
   const { state, dispatch } = useAuth();
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const adjustSpaceLeftText = (spacesLeft: number): string => {
     if (spacesLeft === 0) {
@@ -70,15 +81,23 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
     }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (state.authenticated === "AUTHENTICATED") {
+      //  await wretch()
+      //   .url(`https://gymate-restapi.herokuapp.com/offers/${id}`)
+      //   .get()
+      //   .json();
       //open modal
-      console.log("moge kliknac i bedzia dzialac");
     } else {
-      // register / login
+      handleClickOpen();
     }
   };
-  console.log(sport);
+
+  const formattedDates = offer.dates.map((date) => {
+    const fDate = new Date(date).toDateString();
+    const time = new Date(date).toLocaleTimeString();
+    return { fDate, time };
+  });
 
   return (
     <Paper className={classes.paper}>
@@ -89,11 +108,6 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
             image={`/${sport.toLowerCase()}.jpg`}
             title="Contemplative Reptile"
           />
-          {/* <img
-            style={{ maxHeight: 350, borderRadius: 15 }}
-            src="gym.jpg"
-            alt="Data coming from all directions to a computer"
-          /> */}
           <Box my={2}>
             <Typography variant="caption" color="textSecondary">
               {sport.toUpperCase()}
@@ -109,7 +123,7 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
             <div>{`Entry costs ${offer.singlePrice} zł`}</div>
             <div>
               {offer.isFirstFree
-                ? `First entery is for free!`
+                ? `First entry is for free!`
                 : `There are no discounts`}
             </div>
             <div>Currently there are no special offers</div>
@@ -119,65 +133,73 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
           <Typography variant="h5">Schedule</Typography>
           <Divider />
           <Box mt={3}>
-            {terms.map((term) => (
+            {formattedDates.map((date) => (
               <>
                 <Box textAlign="center" className={classes.dateBox} py={2}>
-                  <Typography variant="subtitle2">
-                    {term.day.toDateString()}
-                  </Typography>
+                  <Typography variant="subtitle2">{date.fDate}</Typography>
                 </Box>
                 <Box my={2}>
-                  {term.classes.map((classi) => (
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    px={2}
+                    alignItems="center"
+                    my={1}
+                    py={1}
+                  >
                     <Box
                       display="flex"
+                      pl={2}
+                      flexDirection="column"
                       justifyContent="space-between"
-                      px={2}
-                      alignItems="center"
-                      my={1}
-                      py={1}
+                      height="45px"
+                      textAlign="center"
+                      alignContent="center"
                     >
-                      <Box
-                        display="flex"
-                        pl={2}
-                        flexDirection="column"
-                        justifyContent="space-between"
-                        height="45px"
-                        textAlign="center"
-                        alignContent="center"
-                      >
-                        <Typography variant="body2">{classi.time}</Typography>
-                        <Typography variant="subtitle2">
-                          {classi.duration} min
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="subtitle1"
-                        style={{ paddingLeft: 45 }}
-                      >
-                        {adjustSpaceLeftText(classi.spacesLeft)}
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.button}
-                        disabled={!classi.spacesLeft}
-                        onClick={handleClick}
-                      >
-                        Join
-                      </Button>
+                      <Typography variant="body2">{date.time}</Typography>
+                      <Typography variant="subtitle2">60 min</Typography>
                     </Box>
-                  ))}
+                    <Typography variant="subtitle1" style={{ paddingLeft: 45 }}>
+                      {adjustSpaceLeftText(offer.spots)}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      disabled={!offer.spots}
+                      onClick={handleClick}
+                    >
+                      Join
+                    </Button>
+                  </Box>
                 </Box>
               </>
             ))}
           </Box>
         </Grid>
       </Grid>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Alert</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You must be logged in to join.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary" autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log(context);
   const { id }: any = context.query;
   const response: OfferType = await wretch()
     .url(`https://gymate-restapi.herokuapp.com/offers/${id}`)
