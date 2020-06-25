@@ -87,10 +87,12 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
           .json();
         setUserRes(response);
         setLoading(false);
-      } catch (err) {}
+      } catch (err) {
+        setLoading(false);
+      }
     }
     fetchSport();
-  }, [state.user]);
+  }, [state.user, state.authenticated]);
 
   const checkIfReserved = (date: Date) => {
     let flag = false;
@@ -144,7 +146,6 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
           })
           .json();
         handleOpenSnackbar();
-        router.push("/schedule");
       } catch (err) {
         console.error(err);
       }
@@ -159,6 +160,8 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
     return { fDate, time, oDate: date };
   });
 
+  console.log("loading", loading);
+  console.log("user", state.user?.id);
   return (
     <Paper className={classes.paper}>
       <Grid component="section" container direction="row">
@@ -229,14 +232,16 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
                       disabled={!offer.spots || checkIfReserved(date.oDate)}
                       onClick={() => handleClick(date.oDate)}
                     >
-                      {!loading ? (
+                      {loading ? (
+                        <CircularProgress />
+                      ) : state.user?.id ? (
                         checkIfReserved(date.oDate) ? (
                           "Enrolled"
                         ) : (
                           "Join"
                         )
                       ) : (
-                        <CircularProgress />
+                        "Join"
                       )}
                     </Button>
                   </Box>
