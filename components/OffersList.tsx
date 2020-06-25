@@ -15,7 +15,7 @@ import {
   orange,
   green,
   red,
-  grey,
+  purple,
   blue,
   pink,
   brown,
@@ -70,7 +70,7 @@ const ListAvatar = ({ type, className }: { type: number; className: any }) => {
       break;
     case 2:
       icon = SportsKabaddiIcon;
-      background = grey[400];
+      background = purple[400];
       break;
     case 3:
       background = blue[400];

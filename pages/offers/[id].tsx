@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import wretch from "wretch";
 import { grey } from "@material-ui/core/colors";
+import { useRouter } from "next/router";
 import {
   Paper,
   makeStyles,
@@ -17,11 +18,18 @@ import {
   Divider,
   CardMedia,
   Button,
+  Snackbar,
+  CircularProgress,
 } from "@material-ui/core";
 import { Offer as OfferType } from "pages/offers";
 import { FullWidthTabs } from "components/Tabs";
 import { GetServerSideProps } from "next";
 import { useAuth } from "context/AuthContext";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+
+function Alert(props: AlertProps) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,6 +70,47 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { state, dispatch } = useAuth();
+  const [userRes, setUserRes] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setLoading(true);
+    async function fetchSport() {
+      try {
+        const response = await wretch()
+          .url(
+            `https://gymate-restapi.herokuapp.com/users/${state.user.id}/reservations`
+          )
+          .get()
+          .json();
+        setUserRes(response);
+        setLoading(false);
+      } catch (err) {}
+    }
+    fetchSport();
+  }, [state.user]);
+
+  const checkIfReserved = (date: Date) => {
+    let flag = false;
+    userRes?.forEach((ev) => {
+      if (ev.offerId === offer.id) {
+        if (new Date(date).getTime() === +new Date(ev.eventDate).getTime()) {
+          flag = true;
+        }
+      }
+    });
+    return flag;
+  };
+
+  const handleOpenSnackbar = () => {
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -83,17 +132,22 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
 
   const handleClick = async (date: any) => {
     if (state.authenticated === "AUTHENTICATED") {
-      await wretch()
-        .url(
-          `https://gymate-restapi.herokuapp.com/offers/${offer.id}/reservations`
-        )
-        .post({
-          offerId: offer.id,
-          userId: state.user.id,
-          eventDate: date,
-        })
-        .json();
-      //open modal
+      try {
+        await wretch()
+          .url(
+            `https://gymate-restapi.herokuapp.com/offers/${offer.id}/reservations`
+          )
+          .post({
+            offerId: offer.id,
+            userId: state.user.id,
+            eventDate: date,
+          })
+          .json();
+        handleOpenSnackbar();
+        router.push("/schedule");
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       handleClickOpen();
     }
@@ -172,10 +226,18 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
                       variant="contained"
                       color="primary"
                       className={classes.button}
-                      disabled={!offer.spots}
+                      disabled={!offer.spots || checkIfReserved(date.oDate)}
                       onClick={() => handleClick(date.oDate)}
                     >
-                      Join
+                      {!loading ? (
+                        checkIfReserved(date.oDate) ? (
+                          "Enrolled"
+                        ) : (
+                          "Join"
+                        )
+                      ) : (
+                        <CircularProgress />
+                      )}
                     </Button>
                   </Box>
                 </Box>
@@ -202,6 +264,15 @@ const Offer: React.FC<OfferProps> = ({ offer, sport, address }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          This is a success message!
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 };

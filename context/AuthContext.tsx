@@ -27,11 +27,13 @@ const AuthProvider = (props: any) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
+    dispatch({ type: Types.LOAD, payload: { state: "FETCHING" } });
     const token = localStorage.getItem("user");
     if (token) {
       const user: User = jwtDecode(token);
       dispatch({ type: Types.LOGIN, payload: user });
     }
+    dispatch({ type: Types.LOAD, payload: { state: "READY" } });
   }, []);
 
   return (

@@ -14,8 +14,7 @@ type ActionMap<M extends { [index: string]: any }> = {
 export enum Types {
   LOGIN = "LOGIN",
   LOGOUT = "LOGOUT",
-  SIGNUP = "SIGNUP",
-  AUTH = "AUTH",
+  LOAD = "LOAD",
 }
 
 export type AUTHENTICATED = "AUTHENTICATED";
@@ -57,6 +56,7 @@ type AuthPayload = {
     accountType: number;
   };
   [Types.LOGOUT]: {};
+  [Types.LOAD]: { state: FETCH_STATE };
 };
 
 export type AuthActions = ActionMap<AuthPayload>[keyof ActionMap<AuthPayload>];
@@ -77,6 +77,8 @@ export const authReducer = (state: AuthState, action: AuthActions) => {
       };
     case Types.LOGOUT:
       return { ...state, user: null, authenticated: "UNAUTHENTICATED" };
+    case Types.LOAD:
+      return { ...state, fetchState: action.payload.state };
     default:
       return state;
   }

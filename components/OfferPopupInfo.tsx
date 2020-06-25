@@ -67,12 +67,7 @@ const OfferPopupInfo: React.FC<OfferPopupInfoProps> = ({ offer }) => {
             </CardContent>
           </CardActionArea>
           <CardActions>
-            <Link
-              href={{
-                pathname: `/offers/${offer.id}`,
-                query: { id: offer.id },
-              }}
-            >
+            <Link href={`/offers/${offer.id}`}>
               <Button size="small" color="primary">
                 Learn More
               </Button>

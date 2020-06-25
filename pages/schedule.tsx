@@ -1,4 +1,4 @@
-import { NextPage, GetServerSideProps } from "next";
+import { NextPage } from "next";
 import { Fragment, useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import { AppointmentsList } from "components/AppointmentsList";
@@ -10,7 +10,14 @@ import {
   Appointments,
   MonthView,
 } from "@devexpress/dx-react-scheduler-material-ui";
-import { Typography, Box, Drawer, makeStyles, fade } from "@material-ui/core";
+import {
+  Typography,
+  Box,
+  Drawer,
+  makeStyles,
+  fade,
+  CircularProgress,
+} from "@material-ui/core";
 
 interface ScheduleProps {}
 
@@ -45,7 +52,6 @@ const Schedule: NextPage<ScheduleProps> = () => {
   const [open, setOpen] = useState(false);
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [offer, setOffer] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -58,29 +64,36 @@ const Schedule: NextPage<ScheduleProps> = () => {
           .get()
           .json();
 
-        const schedulerData = reservations?.map((res) => {
+        const promises = response.map(async (res) => {
+          const a = await wretch()
+            .url(`https://gymate-restapi.herokuapp.com/offers/${res.offerId}`)
+            .get()
+            .json();
+          return a;
+        });
+        const offers = await Promise.all(promises);
+        const schedulerData = response.map((res) => {
           const endDate = new Date(res.eventDate);
           endDate.setHours(endDate.getHours() + 1);
-          return { startDate: res.eventDate, endDate, title: offer.name };
+          const obj = {
+            startDate: res.eventDate,
+            endDate,
+            title: "",
+          };
+          offers.forEach((offer: any) => {
+            if (offer.id === res.offerId) {
+              obj.title = offer.name;
+            }
+          });
+          return obj;
         });
         setReservations(schedulerData);
-
-        const offer = await wretch()
-          .url(
-            `https://gymate-restapi.herokuapp.com/offers/${response[0].offerId}`
-          )
-          .get()
-          .json();
-        setOffer(offer);
         setLoading(false);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     }
     fetchSport();
-  }, []);
+  }, [state.user]);
 
-  console.log(reservations);
   const openDrawer = () => {
     setOpen(true);
   };
@@ -92,24 +105,6 @@ const Schedule: NextPage<ScheduleProps> = () => {
   const year = date.getFullYear();
   const month = date.toLocaleDateString(undefined, { month: "long" });
 
-  // const schedulerData = reservations?.map((res) => {
-  //   const endDate = new Date(res.eventDate);
-  //   endDate.setHours(endDate.getHours() + 1);
-  //   return { startDate: res.eventDate, endDate, title: offer.name };
-  // });
-  const schedulerData = [
-    {
-      startDate: "2020-06-20T09:45",
-      endDate: "2020-06-20T11:00",
-      title: "Meeting",
-    },
-    {
-      startDate: "2020-06-20T12:00",
-      endDate: "2020-06-20T13:30",
-      title: "Go to a gym",
-    },
-  ];
-
   return (
     <Fragment>
       <Paper style={{ marginTop: 32 }}>
@@ -117,29 +112,31 @@ const Schedule: NextPage<ScheduleProps> = () => {
           <Typography variant="h2">{year}</Typography>
           <Typography variant="h1">{month}</Typography>
         </Box>
-        {/* {loading ? (
-          <div>test</div>
-        ) : ( */}
-        <>
-          <Scheduler data={schedulerData}>
-            <ViewState />
-            <MonthView
-              timeTableCellComponent={(props) =>
-                TimeTableCell({
-                  props,
-                  openDrawer,
-                  today: classes.today,
-                  setClickedDate,
-                })
-              }
-            />
-            <Appointments />
-          </Scheduler>
-        </>
-        {/* )} */}
+        {loading ? (
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <Scheduler data={reservations}>
+              <ViewState />
+              <MonthView
+                timeTableCellComponent={(props) =>
+                  TimeTableCell({
+                    props,
+                    openDrawer,
+                    today: classes.today,
+                    setClickedDate,
+                  })
+                }
+              />
+              <Appointments />
+            </Scheduler>
+          </>
+        )}
       </Paper>
       <Drawer anchor="right" open={open} onClose={() => toggleDrawer()}>
-        <AppointmentsList date={clickedDate} appointments={schedulerData} />
+        <AppointmentsList date={clickedDate} appointments={reservations} />
       </Drawer>
     </Fragment>
   );
